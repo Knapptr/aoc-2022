@@ -14,7 +14,7 @@ fn main() {
     for line in lines {
         if line == "" {
             // add elf to elves, init elf
-            elves.list.push(elf.clone());
+            elves.add_elf(&elf);
             elf = Elf::init()
         } else {
             // create cal list
@@ -70,5 +70,8 @@ impl Elves {
             "Most: {}\nSecond Most: {}\nThird Most: {}",
             most, most2, most3
         )
+    }
+    fn add_elf(&mut self, elf: &Elf) {
+        self.list.push(elf.clone());
     }
 }
