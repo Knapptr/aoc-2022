@@ -72,32 +72,3 @@ impl Elves {
         )
     }
 }
-
-// Part 2
-
-// sort_elves(&mut elves);
-// let most = elves.pop().unwrap().total_calories;
-// let second_most = elves.pop().unwrap().total_calories;
-// let third_most = elves.pop().unwrap().total_calories;
-// println!(
-//     "1st: {}\n2nd: {}\n3rd: {}\nTotal:{}",
-//     most,
-//     second_most,
-//     third_most,
-//     (most + second_most + third_most)
-// );
-// Part 1
-// println!(
-//     "Most Calories carried by single elf: {}",
-//     get_max_cal_total(&elves)
-// );
-
-// fn get_max_cal_total(elves: &Vec<Elf>) -> u32 {
-//     let mut most_cals = 0u32;
-//     for elf in elves {
-//         if elf.total_calories > most_cals {
-//             most_cals = elf.total_calories;
-//         }
-//     }
-//     most_cals
-// }
