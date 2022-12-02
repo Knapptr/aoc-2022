@@ -6,21 +6,41 @@ pub fn read_file() -> Vec<String> {
     file_contents.lines().map(|x| x.to_string()).collect()
 }
 
+pub type RoundResults = (ThrownObject, ThrownObject);
 pub enum ThrownObject {
     Rock,
     Paper,
     Scissors,
 }
-pub type RoundResults = (ThrownObject, ThrownObject);
-
-fn get_thrown(char_thrown: char) -> ThrownObject {
-    match char_thrown {
-        'X' | 'A' => ThrownObject::Rock,
-        'Y' | 'B' => ThrownObject::Paper,
-        'Z' | 'C' => ThrownObject::Scissors,
-        _ => panic!(),
+impl ThrownObject {
+    fn from_char(char: char) -> ThrownObject {
+        match char {
+            'A' => ThrownObject::Rock,
+            'B' => ThrownObject::Paper,
+            'C' => ThrownObject::Scissors,
+            _ => unreachable!(),
+        }
+    }
+    fn from_suggestion(opponent_throws: char, suggested_condition: char) -> ThrownObject {
+        let opponent: ThrownObject = ThrownObject::from_char(opponent_throws);
+        match suggested_condition {
+            'X' => match opponent {
+                // need to lose
+                ThrownObject::Scissors => ThrownObject::Paper,
+                ThrownObject::Paper => ThrownObject::Rock,
+                ThrownObject::Rock => ThrownObject::Scissors,
+            },
+            'Z' => match opponent {
+                // need to win
+                ThrownObject::Scissors => ThrownObject::Rock,
+                ThrownObject::Paper => ThrownObject::Scissors,
+                ThrownObject::Rock => ThrownObject::Paper,
+            },
+            _ => opponent, // will not handle code that doesn't conform to spec
+        }
     }
 }
+
 pub fn parse_line(line: &str) -> RoundResults {
     let mut letters = line.split(" ").map(|x| x.chars());
     let el1 = letters
@@ -33,33 +53,11 @@ pub fn parse_line(line: &str) -> RoundResults {
         .expect("something went wrong")
         .nth(0)
         .unwrap();
-    let opponent_throw: ThrownObject = get_thrown(el1);
-    let opponent_throw_for_other_function: ThrownObject = get_thrown(el1);
     (
-        opponent_throw,
-        get_thrown_p2(opponent_throw_for_other_function, el2),
+        ThrownObject::from_char(el1),
+        ThrownObject::from_suggestion(el1, el2),
     )
 }
-
-fn get_thrown_p2(opponent: ThrownObject, suggested_condition: char) -> ThrownObject {
-    match suggested_condition {
-        'X' => match opponent {
-            // need to lose
-            ThrownObject::Scissors => ThrownObject::Paper,
-            ThrownObject::Paper => ThrownObject::Rock,
-            ThrownObject::Rock => ThrownObject::Scissors,
-        },
-        'Z' => match opponent {
-            // need to win
-            ThrownObject::Scissors => ThrownObject::Rock,
-            ThrownObject::Paper => ThrownObject::Scissors,
-            ThrownObject::Rock => ThrownObject::Paper,
-        },
-        _ => opponent, // need to tie. This will not handle data that does not corform to
-                       // the xyz spec
-    }
-}
-
 #[derive(Debug)]
 enum Result {
     Win,
@@ -103,22 +101,6 @@ pub fn score(throws: &RoundResults) -> u32 {
 }
 
 #[cfg(test)]
-#[test]
-fn get_thrown_returns_correctly() {
-    let mut thrown_char = 'A';
-    assert!(matches!(get_thrown(thrown_char), ThrownObject::Rock));
-    thrown_char = 'B';
-    assert!(matches!(get_thrown(thrown_char), ThrownObject::Paper));
-    thrown_char = 'C';
-    assert!(matches!(get_thrown(thrown_char), ThrownObject::Scissors));
-}
-
-#[test]
-#[should_panic]
-fn get_thrown_panics_on_non_char() {
-    get_thrown('T');
-}
-
 #[test]
 fn parse_line_returns_correctly() {
     let str = "A X";
