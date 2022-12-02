@@ -6,13 +6,29 @@ pub fn read_file() -> Vec<String> {
     file_contents.lines().map(|x| x.to_string()).collect()
 }
 
-pub type RoundResults = (ThrownObject, ThrownObject);
+#[derive(Debug)]
+enum Result {
+    Win,
+    Lose,
+    Tie,
+}
 pub enum ThrownObject {
     Rock,
     Paper,
     Scissors,
 }
 impl ThrownObject {
+    // use this to solve part 1 when parsing
+    // XYZ as Rock, paper, Scissors
+    #[allow(dead_code)]
+    fn from_char_p1(char: char) -> ThrownObject {
+        match char {
+            'X' => ThrownObject::Rock,
+            'Y' => ThrownObject::Paper,
+            'Z' => ThrownObject::Scissors,
+            _ => unreachable!(),
+        }
+    }
     fn from_char(char: char) -> ThrownObject {
         match char {
             'A' => ThrownObject::Rock,
@@ -39,9 +55,42 @@ impl ThrownObject {
             _ => opponent, // will not handle code that doesn't conform to spec
         }
     }
+    fn do_i_win_against(&self, against: &ThrownObject) -> Result {
+        match self {
+            ThrownObject::Rock => match against {
+                ThrownObject::Rock => Result::Tie,
+                ThrownObject::Paper => Result::Lose,
+                ThrownObject::Scissors => Result::Win,
+            },
+            ThrownObject::Paper => match against {
+                ThrownObject::Rock => Result::Win,
+                ThrownObject::Paper => Result::Tie,
+                ThrownObject::Scissors => Result::Lose,
+            },
+            ThrownObject::Scissors => match against {
+                ThrownObject::Rock => Result::Lose,
+                ThrownObject::Paper => Result::Win,
+                ThrownObject::Scissors => Result::Tie,
+            },
+        }
+    }
+    fn score_against(&self, against: &ThrownObject) -> u32 {
+        let i_win: Result = self.do_i_win_against(&against);
+        let thrown_points: u32 = match self {
+            ThrownObject::Rock => 1,
+            ThrownObject::Paper => 2,
+            ThrownObject::Scissors => 3,
+        };
+        let result_points: u32 = match i_win {
+            Result::Win => 6,
+            Result::Tie => 3,
+            Result::Lose => 0,
+        };
+        thrown_points + result_points
+    }
 }
 
-pub fn parse_line(line: &str) -> RoundResults {
+pub fn parse_line_to_score(line: &str) -> u32 {
     let mut letters = line.split(" ").map(|x| x.chars());
     let el1 = letters
         .next()
@@ -53,66 +102,9 @@ pub fn parse_line(line: &str) -> RoundResults {
         .expect("something went wrong")
         .nth(0)
         .unwrap();
-    (
-        ThrownObject::from_char(el1),
-        ThrownObject::from_suggestion(el1, el2),
-    )
-}
-#[derive(Debug)]
-enum Result {
-    Win,
-    Lose,
-    Tie,
-}
 
-fn do_i_win(throws: &RoundResults) -> Result {
-    match throws.1 {
-        ThrownObject::Rock => match throws.0 {
-            ThrownObject::Rock => Result::Tie,
-            ThrownObject::Paper => Result::Lose,
-            ThrownObject::Scissors => Result::Win,
-        },
-        ThrownObject::Paper => match throws.0 {
-            ThrownObject::Rock => Result::Win,
-            ThrownObject::Paper => Result::Tie,
-            ThrownObject::Scissors => Result::Lose,
-        },
-        ThrownObject::Scissors => match throws.0 {
-            ThrownObject::Rock => Result::Lose,
-            ThrownObject::Paper => Result::Win,
-            ThrownObject::Scissors => Result::Tie,
-        },
-    }
-}
+    let their_move = ThrownObject::from_char(el1);
+    let my_move = ThrownObject::from_suggestion(el1, el2);
 
-pub fn score(throws: &RoundResults) -> u32 {
-    let i_win: Result = do_i_win(&throws);
-    let thrown_points: u32 = match throws.1 {
-        ThrownObject::Rock => 1,
-        ThrownObject::Paper => 2,
-        ThrownObject::Scissors => 3,
-    };
-    let result_points: u32 = match i_win {
-        Result::Win => 6,
-        Result::Tie => 3,
-        Result::Lose => 0,
-    };
-    thrown_points + result_points
-}
-
-#[cfg(test)]
-#[test]
-fn parse_line_returns_correctly() {
-    let str = "A X";
-    let result = parse_line(str);
-    assert!(matches!(result.1, ThrownObject::Scissors));
-    assert!(matches!(result.0, ThrownObject::Rock))
-}
-
-#[test]
-fn scores_correctly() {
-    let mut throws: RoundResults = (ThrownObject::Rock, ThrownObject::Scissors);
-    assert_eq!(score(&throws), 3);
-    throws.0 = ThrownObject::Scissors;
-    assert_eq!(score(&throws), 6);
+    my_move.score_against(&their_move)
 }
