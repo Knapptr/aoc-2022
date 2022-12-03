@@ -1,13 +1,7 @@
 use super::imp::{Elf, Elves};
-use std::fs::File;
-use std::io::{self, BufRead};
 
-pub fn solve() {
-    let file = File::open("inputs/1.1.txt").expect("Error opening file");
-    let lines: Vec<String> = io::BufReader::new(file)
-        .lines()
-        .filter_map(|l| l.ok())
-        .collect();
+pub fn solve(input: &str) {
+    let lines = input.lines();
 
     let mut elves = Elves::new();
     let mut elf = Elf::init();

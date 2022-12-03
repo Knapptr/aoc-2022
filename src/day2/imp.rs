@@ -1,11 +1,3 @@
-use std::fs::read_to_string;
-
-pub fn read_file() -> Vec<String> {
-    let file_contents = read_to_string("inputs/2.txt").expect("could not read data in 2.txt");
-
-    file_contents.lines().map(|x| x.to_string()).collect()
-}
-
 #[derive(Debug)]
 enum Result {
     Win,
