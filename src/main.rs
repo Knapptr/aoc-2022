@@ -1,5 +1,5 @@
 #[allow(unused_imports)]
-use aoc::{day1, day2};
+use aoc::{day1, day2, day3};
 use chrono::{Datelike, Local};
 use solve::solve;
 use std::{env, fs};
