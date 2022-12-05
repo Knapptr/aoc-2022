@@ -1,4 +1,4 @@
-use aoc::{day1, day2, day3, day4};
+use aoc::{day1, day2, day3, day4, day5};
 
 pub fn solve(day: usize, input: &str) {
     match day {
@@ -6,6 +6,7 @@ pub fn solve(day: usize, input: &str) {
         2 => day2::solve(input),
         3 => day3::solve(input),
         4 => day4::solve(input),
+        5 => day5::solve(input),
         _ => panic!(),
     }
 }
