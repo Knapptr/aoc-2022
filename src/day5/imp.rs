@@ -9,11 +9,9 @@ impl FromStr for Command {
     type Err = Error;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let nums: Vec<usize> = s
-            .replace("move", "")
-            .replace("from", "")
-            .replace("to", "")
             .split_whitespace()
-            .map(|x| x.parse().unwrap())
+            .skip(1)
+            .filter_map(|string| string.parse().ok())
             .collect();
         Ok(Command {
             quantity: nums[0],
