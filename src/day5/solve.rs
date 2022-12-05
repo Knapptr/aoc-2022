@@ -1,27 +1,27 @@
-use super::imp;
-use std::str::FromStr;
+use super::imp::{Commands, Ship};
 
 pub fn solve(input: &str) {
-    let mut input_sections = input.split("\n\n");
-    let ship_section = input_sections.next().unwrap();
-    let command_section = input_sections.next().unwrap();
+    let (ship_info, commands_input) = input.split_once("\n\n").expect("Data is uniform");
 
-    // parse ship
-    let mut ship_crates = imp::parse_stack_input(&imp::get_stack_info(ship_section)).unwrap();
-
-    // move crates
-    for command_line in command_section.lines() {
-        let command = imp::Command::from_str(command_line).unwrap();
-        imp::move_crates_9001(&mut ship_crates, command);
-        // imp::move_crates_9000(&mut ship_crates, command);
+    // Part 1
+    // create ship
+    let mut ship_9000 = Ship::from_input(ship_info);
+    // create command list
+    let commands = Commands::from_input(commands_input);
+    // move all crates
+    for command in commands.list {
+        ship_9000.move_9000(command)
     }
-    // print ship
-    // count stacks
-    let stack_count = ship_crates.iter().count();
-    for stack_number in 1..=stack_count {
-        //print the last item on the array
-        let last_item = ship_crates.get_mut(&stack_number).unwrap().pop().unwrap();
-
-        println!("Stack {}: {}", stack_number, last_item)
+    // Part 2
+    // create ship
+    let mut ship_9001 = Ship::from_input(ship_info);
+    // create command list
+    let commands = Commands::from_input(commands_input);
+    // move all crates
+    for command in commands.list {
+        ship_9001.move_9001(command)
     }
+    // Print Answers
+    println!("part 1: {}", ship_9000.top_crates());
+    println!("part 2: {}", ship_9001.top_crates());
 }
