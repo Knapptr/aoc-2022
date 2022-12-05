@@ -10,7 +10,6 @@ impl FromStr for Command {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let nums: Vec<usize> = s
             .split_whitespace()
-            .skip(1)
             .filter_map(|string| string.parse().ok())
             .collect();
         Ok(Command {
