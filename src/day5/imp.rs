@@ -45,7 +45,9 @@ impl Ship {
         self.crates[command.to].append(&mut removed_items);
     }
 }
+
 // Commands
+
 #[derive(Debug)]
 pub struct Commands {
     pub list: Vec<Command>,
