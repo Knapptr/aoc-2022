@@ -63,7 +63,6 @@ impl RopePlane {
             Direction::Down => (0, -1),
             Direction::Left => (-1, 0),
             Direction::Right => (1, 0),
-            _ => panic!(),
         };
         for _ in 0..mv.amount {
             self.h_loc.0 += x_mod;

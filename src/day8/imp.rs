@@ -1,4 +1,5 @@
-const test_input: &str = "\
+#[allow(dead_code)]
+const TEST_INPUT: &str = "\
 30373
 25512
 65332
@@ -67,7 +68,7 @@ fn get_top_score(grid: &TreeGrid, mut y_index: usize, x_index: usize) -> u32 {
     }
     score
 }
-fn get_left_score(row: &TreeRow, mut index: usize) -> u32 {
+fn get_left_score(row: &TreeRow, index: usize) -> u32 {
     let mut score: u32 = 0;
     if index == 0 {
         return 0;
@@ -88,7 +89,7 @@ fn get_left_score(row: &TreeRow, mut index: usize) -> u32 {
     }
     score
 }
-fn get_right_score(row: &TreeRow, mut index: usize) -> u32 {
+fn get_right_score(row: &TreeRow, index: usize) -> u32 {
     let mut score: u32 = 0;
     if index == row.len() - 1 {
         return 0;
@@ -163,7 +164,7 @@ pub fn count_visible_trees(grid: &TreeGrid) -> usize {
 
     // start at all outside vals
     for (y_index, row) in grid.iter().enumerate().skip(1).take(grid.len() - 2) {
-        for (x_index, x_val) in row.iter().enumerate().skip(1).take(row.len() - 2) {
+        for (x_index, _x_val) in row.iter().enumerate().skip(1).take(row.len() - 2) {
             if test_horizontal(row, x_index) {
                 amt += 1
             } else {
@@ -198,13 +199,13 @@ fn check_horizontal() {
 }
 #[test]
 fn check_vertical() {
-    let grid = parse_grid_from_input(test_input);
+    let grid = parse_grid_from_input(TEST_INPUT);
     let is_vertical_visible = test_vertical(&grid, 1, 1);
     assert!(is_vertical_visible);
 }
 #[test]
 fn counts_trees() {
-    let grid = parse_grid_from_input(test_input);
+    let grid = parse_grid_from_input(TEST_INPUT);
     let count = count_visible_trees(&grid);
     assert_eq!(count, 21);
 }
@@ -223,7 +224,7 @@ fn gets_right_score() {
 }
 #[test]
 fn gets_top_score() {
-    let grid = parse_grid_from_input(test_input);
+    let grid = parse_grid_from_input(TEST_INPUT);
 
     let score = get_top_score(&grid, 3, 2);
 
@@ -231,7 +232,7 @@ fn gets_top_score() {
 }
 #[test]
 fn gets_bottom_score() {
-    let grid = parse_grid_from_input(test_input);
+    let grid = parse_grid_from_input(TEST_INPUT);
 
     let score = get_bottom_score(&grid, 1, 2);
 
@@ -239,7 +240,7 @@ fn gets_bottom_score() {
 }
 #[test]
 fn gets_full_score() {
-    let grid = parse_grid_from_input(test_input);
+    let grid = parse_grid_from_input(TEST_INPUT);
 
     let score = get_full_score(&grid, 3, 2);
 

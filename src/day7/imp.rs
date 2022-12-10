@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 // $ cd
 // $ ls
 // dir a

@@ -1,4 +1,5 @@
 // use super::imp::{parse_line, Command, Directory, LineType};
+#[allow(unused_variables)]
 pub fn solve(input: &str) {
     //let mut root: Directory = Directory::create("/");
     //let mut nav_stack: Vec<&mut Directory> = Vec::new();

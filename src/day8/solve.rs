@@ -1,6 +1,5 @@
-use crate::day8::imp::{find_highest_score, get_full_score};
+use super::imp::{count_visible_trees, find_highest_score, parse_grid_from_input};
 
-use super::imp::{count_visible_trees, parse_grid_from_input};
 pub fn solve(input: &str) {
     let tree_grid = parse_grid_from_input(input);
     let count = count_visible_trees(&tree_grid);
