@@ -30,33 +30,23 @@ type Coords = (i32, i32);
 pub struct RopePlane {
     h_loc: Coords,
     knot_locs: Vec<Coords>,
-    pub t_hist: Vec<Coords>,
+    pub t_hist: HashSet<Coords>,
 }
 impl RopePlane {
     pub fn uniq(&mut self) -> usize {
-        self.t_hist.dedup();
-        self.t_hist.sort();
-        self.t_hist.dedup();
         self.t_hist.iter().count()
     }
     pub fn init(tail_count: usize) -> RopePlane {
         RopePlane {
             h_loc: (0, 0),
-            t_hist: Vec::new(),
+            t_hist: HashSet::new(),
             knot_locs: vec![(0, 0); tail_count],
         }
     }
-    pub fn update_follow_head(&mut self) {
-        let first_tail = self.knot_locs.get(0).expect("there is a first tail knot");
-
-        let new_coords = t_fol(&self.h_loc, first_tail);
-
-        *self.knot_locs.get_mut(0).expect("there is a first value") = new_coords;
-    }
 
     pub fn update_tail(&mut self) {
-        let mut prev = self.knot_locs.first().unwrap().clone();
-        for knot in self.knot_locs.iter_mut().skip(1) {
+        let mut prev = self.h_loc;
+        for knot in self.knot_locs.iter_mut() {
             *knot = t_fol(&prev, &knot);
             prev = *knot;
         }
@@ -64,7 +54,7 @@ impl RopePlane {
 
     fn update_history(&mut self) {
         let tail_val = self.knot_locs.last().unwrap().clone();
-        self.t_hist.push(tail_val);
+        self.t_hist.insert(tail_val);
     }
 
     pub fn mv_h(&mut self, mv: Move) {
@@ -78,12 +68,12 @@ impl RopePlane {
         for _ in 0..mv.amount {
             self.h_loc.0 += x_mod;
             self.h_loc.1 += y_mod;
-            self.update_follow_head();
             self.update_tail();
             self.update_history();
         }
     }
 }
+
 fn t_fol(last_knot_loc: &Coords, tail_knot_loc: &Coords) -> Coords {
     let difference_x = last_knot_loc.0 - tail_knot_loc.0;
     let difference_y = last_knot_loc.1 - tail_knot_loc.1;
