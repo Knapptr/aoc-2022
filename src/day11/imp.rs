@@ -1,3 +1,6 @@
+struct Monkeys {
+    list: Vec<Monkey>,
+}
 #[derive(Debug)]
 enum Operation {
     Add(u128),
@@ -14,13 +17,13 @@ impl Item {
     fn create(worry_level: u128) -> Item {
         Item { worry_level }
     }
-    fn set_worry<T: Fn(u128) -> u128>(&mut self, operation: &Operation, f: T) {
+    fn set_worry<T: Fn(u128) -> u128>(&mut self, operation: &Operation, post_inspect_callback: T) {
         match operation {
             Operation::Add(x) => self.worry_level += x,
             Operation::Multiply(x) => self.worry_level = self.worry_level * x,
             Operation::Square => self.worry_level = self.worry_level * self.worry_level,
         }
-        self.worry_level = f(self.worry_level);
+        self.worry_level = post_inspect_callback(self.worry_level);
     }
 }
 

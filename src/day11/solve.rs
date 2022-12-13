@@ -39,8 +39,9 @@ pub fn solve(input: &str) {
         monkeys.push(Monkey::parse(mk));
     }
 
-    let gcd: u128 = monkeys.iter().map(|x| x.test_number).product();
-    let p2_closure = |x| x % gcd;
+    let gcf: u128 = monkeys.iter().map(|x| x.test_number).product();
+    let p2_closure = |x| x % gcf;
+
     for _round in 0..10_000 {
         for m_i in 0..monkeys.len() {
             let inspected_items = monkeys[m_i].inspect_all_items(p2_closure);
