@@ -8,18 +8,17 @@ pub fn bfs(matrix: Matrix) -> Vec<Option<i32>> {
         let mut seen_coords = HashSet::new();
         q.push_back((*start, 0));
 
-        while q.len() > 0 {
-            let (insp_coords, steps) = q.pop_front().unwrap();
-
-            if seen_coords.contains(&insp_coords) || steps >= min_path.unwrap_or(i32::MAX) {
+        while let Some((insp_coords, steps)) = q.pop_front() {
+            if seen_coords.contains(&insp_coords) {
                 continue;
             }
-            seen_coords.insert(insp_coords);
 
             if insp_coords == matrix.end.unwrap() {
                 min_paths.push(Some(steps));
                 break;
             }
+
+            seen_coords.insert(insp_coords);
 
             let neighbors = get_neigbor_indicies(&matrix, insp_coords);
 
@@ -33,7 +32,6 @@ pub fn bfs(matrix: Matrix) -> Vec<Option<i32>> {
                 }
             }
         }
-
         min_paths.push(None);
     }
     min_paths
@@ -124,7 +122,7 @@ fn parse_row<T: FnMut(&CellType)>(row: &str, col_idx: usize, mut callback: T) ->
 fn get_letter_value(char: (Coords, char)) -> CellType {
     match char.1 {
         'S' => CellType::Start(char.0),
-        // 'a' => CellType::Start(char.0),
+        'a' => CellType::Start(char.0),
         'E' => CellType::End(char.0),
         _ => CellType::Normal(char.1 as i32 - 96),
     }
