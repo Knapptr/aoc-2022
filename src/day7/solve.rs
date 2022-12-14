@@ -1,25 +1,28 @@
-use crate::day7::imp::TEST_IN;
+// use crate::day7::imp::TEST_IN;
 
 use super::imp::Drive;
 
-// use super::imp::{parse_line, Command, Directory, LineType};
-#[allow(unused_variables)]
+const MAX_SPACE: u32 = 70_000_000;
+const DESIRED_SPACE: u32 = 30_000_000;
+
 pub fn solve(input: &str) {
     let root = Drive::from_input(input);
-    // let root = Drive::from_input(TEST_IN);
-    let sum: u32 = get_folder_sizes(root).iter().sum();
-    println!("part 1: {}", sum);
-}
-fn get_folder_sizes(drive: Drive) -> Vec<u32> {
-    let mut folder_list = Vec::new();
-    if drive.get_size() <= 100_000 {
-        folder_list.push(drive.get_size());
-    }
-    for folder in drive.folders {
-        let res = get_folder_sizes(folder);
-        for val in res {
-            folder_list.push(val);
-        }
-    }
-    folder_list
+
+    let folder_sizes = root.get_folder_sizes();
+    let part_1: u32 = folder_sizes.iter().filter(|&x| *x <= 100000).sum();
+
+    println!("Part 1: {}", part_1);
+
+    let current_space: u32 = root.get_size();
+
+    let unused_space = MAX_SPACE - current_space;
+    let needed_space = DESIRED_SPACE - unused_space;
+
+    let part_2 = folder_sizes
+        .iter()
+        .filter(|&x| *x >= needed_space)
+        .min()
+        .unwrap();
+
+    println!("Part 2: {}", part_2);
 }

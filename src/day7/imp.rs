@@ -95,6 +95,17 @@ impl Drive {
         drive_stack.pop().unwrap()
     }
 
+    pub fn get_folder_sizes(&self) -> Vec<u32> {
+        let mut folder_list = Vec::new();
+        folder_list.push(self.get_size());
+        for folder in &self.folders {
+            let res = folder.get_folder_sizes();
+            for val in res {
+                folder_list.push(val);
+            }
+        }
+        folder_list
+    }
     fn parse_command(input: &str) -> Command {
         let (first_word, other_words) = input
             .split_once(" ")
