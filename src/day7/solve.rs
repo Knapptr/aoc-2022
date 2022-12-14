@@ -6,7 +6,8 @@ const MAX_SPACE: u32 = 70_000_000;
 const DESIRED_SPACE: u32 = 30_000_000;
 
 pub fn solve(input: &str) {
-    let root = Drive::from_input(input);
+    let mut lines = input.lines();
+    let root = Drive::from_input(&mut lines);
 
     let folder_sizes = root.get_folder_sizes();
     let part_1: u32 = folder_sizes.iter().filter(|&x| *x <= 100000).sum();
