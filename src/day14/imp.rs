@@ -5,6 +5,7 @@ use std::{
 };
 
 const SAND_ORIGIN_X: usize = 500;
+const PART_2_WIDTH: usize = 1000;
 
 #[derive(Debug, Clone, Copy)]
 enum Cell {
@@ -64,65 +65,92 @@ pub struct RockGrid {
     grid: Vec<Vec<Cell>>,
     min_x: usize,
     pub drop_possible: bool,
+    part_1: bool,
+    drop_count: u32,
+    floor_width: Option<usize>,
 }
 
 impl RockGrid {
-    pub fn from_input(input: &str) -> Self {
-        RockGrid::from_rock_commands(RockCommand::vec_from_input(input))
+    pub fn from_input(input: &str, part_1: bool, floor_width: Option<usize>) -> Self {
+        RockGrid::from_rock_commands(RockCommand::vec_from_input(input), part_1, floor_width)
     }
     fn sand_origin(&self) -> usize {
-        SAND_ORIGIN_X - self.min_x
+        if self.part_1 {
+            SAND_ORIGIN_X - self.min_x
+        } else {
+            SAND_ORIGIN_X - self.min_x + self.floor_width.unwrap() / 2
+        }
     }
-    fn height(&self) -> isize {
+    pub fn height(&self) -> isize {
         self.grid.len() as isize
     }
-    fn width(&self) -> isize {
+    pub fn width(&self) -> isize {
         self.grid[0].len() as isize
     }
     pub fn drop_sand_grain(&mut self) {
-        let origin = self.sand_origin();
-        // self.grid[0][origin] = Cell::Sand;
+        //starting coord of drop
         let mut current_coord: Coords = Coords::at(self.sand_origin(), 0);
+        // test to see if continued drop is possible
         while !current_coord.is_at_bounds(&self) {
-            match self.get_at_coords(&current_coord.at_descend()) {
+            // println!("Drop is at: {:?}", current_coord);
+            match self.get_at_coords(&current_coord) {
                 Cell::Empty => {
-                    current_coord = current_coord.at_descend();
-                    continue;
-                }
-                _ => {
-                    //check left
-                    match self.get_at_coords(&current_coord.at_desc_left()) {
+                    // println!("Checking current location: {:?}", current_coord);
+                    // check if possible to descend
+                    match self.get_at_coords(&current_coord.at_descend()) {
                         Cell::Empty => {
-                            current_coord = current_coord.at_desc_left();
-                            continue;
-                        }
-                        _ => (),
-                    }
-                    //check right
-                    match self.get_at_coords(&current_coord.at_desc_right()) {
-                        Cell::Empty => {
-                            current_coord = current_coord.at_desc_right();
+                            current_coord = current_coord.at_descend();
                             continue;
                         }
                         _ => {
-                            *self.get_at_coords_mut(&current_coord) = Cell::Sand;
-                            break;
+                            //check left
+                            // println!("Cannot drop straight down");
+                            match self.get_at_coords(&current_coord.at_desc_left()) {
+                                Cell::Empty => {
+                                    current_coord = current_coord.at_desc_left();
+                                    continue;
+                                }
+                                _ => {
+                                    // println!("Cannot drop left");
+                                }
+                            }
+                            //check right
+                            match self.get_at_coords(&current_coord.at_desc_right()) {
+                                Cell::Empty => {
+                                    current_coord = current_coord.at_desc_right();
+                                    continue;
+                                }
+                                _ => {
+                                    // println!("Placing sand");
+                                    *self.get_at_coords_mut(&current_coord) = Cell::Sand;
+                                    break;
+                                }
+                            }
                         }
                     }
                 }
+                _ => {
+                    println!("Current cell not empty?")
+                }
             }
         }
-        let mut row_string = String::new();
-        for cell in &self.grid[current_coord.y] {
-            match cell {
-                Cell::Rock => row_string.push_str("X"),
-                Cell::Empty => row_string.push_str("."),
-                _ => (),
-            }
-        }
-        if current_coord.is_at_bounds(self) {
+        // for part 2
+        if current_coord == Coords::at(self.sand_origin(), 0) {
             self.drop_possible = false;
         }
+        if current_coord.is_at_bounds(self) {
+            *self.get_at_coords_mut(&current_coord) = Cell::Sand;
+            self.drop_possible = false;
+        }
+        // WHAT WAS THIS?
+        // let mut row_string = String::new();
+        // for cell in &self.grid[current_coord.y] {
+        //     match cell {
+        //         Cell::Rock => row_string.push_str("X"),
+        //         Cell::Empty => row_string.push_str("."),
+        //         _ => (),
+        //     }
+        // }
     }
     fn get_at_coords_mut(&mut self, coords: &Coords) -> &mut Cell {
         &mut self.grid[coords.y][coords.x]
@@ -130,7 +158,11 @@ impl RockGrid {
     fn get_at_coords(&self, coords: &Coords) -> &Cell {
         &self.grid[coords.y][coords.x]
     }
-    fn from_rock_commands(commands: Vec<RockCommand>) -> Self {
+    fn from_rock_commands(
+        commands: Vec<RockCommand>,
+        part_1: bool,
+        floor_width: Option<usize>,
+    ) -> Self {
         // this is bad. Redo this bit, needless iteration.
         let min_x = commands
             .iter()
@@ -149,20 +181,46 @@ impl RockGrid {
             .unwrap();
 
         // subtract min x from all x coords
-        let mut grid = vec![vec![Cell::Empty; (max_x - min_x + 1) as usize]; max_y as usize];
+
+        let mut grid;
+        if part_1 {
+            grid = vec![vec![Cell::Empty; (max_x - min_x + 1) as usize]; max_y + 2 as usize];
+        } else {
+            if let Some(floor_width) = floor_width {
+                grid = vec![vec![Cell::Empty; (floor_width) as usize]; max_y + 3 as usize];
+            } else {
+                grid = vec![vec![Cell::Empty; (PART_2_WIDTH) as usize]; max_y + 3 as usize];
+            }
+        }
         // let mut grid = vec![vec![Cell::Empty; (max_x  + 1) as usize]; max_y as usize];
 
         for command in commands {
             let all_coords = command.get_all_coords();
             for coord in all_coords {
-                grid[(coord.y - 1) as usize][(coord.x - min_x) as usize] = Cell::Rock
+                if part_1 {
+                    grid[coord.y][(coord.x - min_x) as usize] = Cell::Rock
+                } else {
+                    if let Some(floor_width) = floor_width {
+                        grid[coord.y][coord.x - min_x + floor_width / 2] = Cell::Rock
+                    } else {
+                        grid[(coord.y - 1)][(coord.x)] = Cell::Rock
+                    }
+                }
                 // grid[(coord.y - 1) as usize][(coord.x ) as usize] = Cell::Rock
+            }
+        }
+        if !part_1 {
+            for cell in &mut grid[max_y + 2] {
+                *cell = Cell::Rock
             }
         }
         RockGrid {
             min_x,
             grid,
             drop_possible: true,
+            part_1,
+            drop_count: 0,
+            floor_width,
         }
     }
 }
