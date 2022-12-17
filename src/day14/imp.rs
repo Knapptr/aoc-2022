@@ -142,15 +142,6 @@ impl RockGrid {
             *self.get_at_coords_mut(&current_coord) = Cell::Sand;
             self.drop_possible = false;
         }
-        // WHAT WAS THIS?
-        // let mut row_string = String::new();
-        // for cell in &self.grid[current_coord.y] {
-        //     match cell {
-        //         Cell::Rock => row_string.push_str("X"),
-        //         Cell::Empty => row_string.push_str("."),
-        //         _ => (),
-        //     }
-        // }
     }
     fn get_at_coords_mut(&mut self, coords: &Coords) -> &mut Cell {
         &mut self.grid[coords.y][coords.x]
@@ -348,7 +339,7 @@ fn sand_x() {
     let test_in = "498,4 -> 498,6 -> 496,6
 503,4 -> 502,4 -> 502,9 -> 494,9";
     let rock_commands = RockCommand::vec_from_input(test_in);
-    let grid = RockGrid::from_rock_commands(rock_commands);
+    let grid = RockGrid::from_rock_commands(rock_commands, false, None);
     assert_eq!(grid.sand_origin(), 6);
 }
 #[test]

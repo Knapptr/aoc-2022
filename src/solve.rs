@@ -1,5 +1,5 @@
 use aoc::{
-    day1, day10, day11, day12, day13, day14, day2, day3, day4, day5, day6, day7, day8, day9,
+    day1, day10, day11, day12, day13, day14, day15, day2, day3, day4, day5, day6, day7, day8, day9,
 };
 
 pub fn solve(day: usize, input: &str) {
@@ -18,6 +18,7 @@ pub fn solve(day: usize, input: &str) {
         12 => day12::solve(input),
         13 => day13::solve(input),
         14 => day14::solve(input),
+        15 => day15::solve(input),
         _ => panic!(),
     }
 }

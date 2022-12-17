@@ -24,7 +24,8 @@ pub fn solve(input: &str) {
         count_2 += 1
     }
 
-    println!("{}", cave_1);
-    println!("Part 1: {}", count_1 + 1)
+    println!("Part 1: {}", count_1 + 1);
     println!("Part 2: {}", count_2);
+    // println!("{}", cave_1);
+    // println!("{}", cave_2);
 }
